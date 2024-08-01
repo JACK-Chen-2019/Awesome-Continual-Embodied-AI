@@ -1,0 +1,30 @@
+name: Add Paper
+
+on:
+  issues:
+    types: [opened]
+  schedule:
+    - cron: '0 0 * * 1' # 每周一运行
+
+jobs:
+  add-paper:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
+
+    - name: Install dependencies
+      run: pip install requests beautifulsoup4
+
+    - name: Process new paper
+      run: python process_new_paper.py
+      env:
+        GITHUB_ISSUE_BODY: ${{ github.event.issue.body }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

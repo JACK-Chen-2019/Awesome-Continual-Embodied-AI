@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>添加论文</title>
+</head>
+<body>
+    <h1>添加论文</h1>
+    <form id="paperForm">
+        <label for="title">论文标题:</label><br>
+        <input type="text" id="title" name="title" required><br><br>
+        <label for="pdf">PDF 链接:</label><br>
+        <input type="url" id="pdf" name="pdf" required><br><br>
+        <label for="code">代码链接:</label><br>
+        <input type="url" id="code" name="code" required><br><br>
+        <label for="github">GitHub 项目链接:</label><br>
+        <input type="url" id="github" name="github" required><br><br>
+        <label for="citations">引用次数:</label><br>
+        <input type="number" id="citations" name="citations" required><br><br>
+        <button type="submit">提交</button>
+    </form>
+
+    <script>
+        document.getElementById('paperForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData.entries());
+            
+            fetch('https://api.github.com/repos/用户名/仓库名/issues', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'token YOUR_GITHUB_TOKEN',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    title: `New Paper: ${data.title}`,
+                    body: JSON.stringify(data, null, 2)
+                })
+            }).then(response => response.json()).then(data => {
+                alert('论文已成功提交');
+                event.target.reset();
+            }).catch(error => {
+                console.error('Error:', error);
+                alert('提交失败，请稍后再试');
+            });
+        });
+    </script>
+</body>
+</html>
